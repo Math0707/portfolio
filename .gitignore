@@ -10,6 +10,7 @@ build/
 
 # environment
 .env
+.env*.local
 
 # logs
 npm-debug.log*
@@ -20,8 +21,8 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-.vscode/           # Configurações do VS Code (opcional)
-.idea/             # Configurações do WebStorm/IntelliJ (opcional)
-*.local            # Outros arquivos de configuração local
+# editores
+.vscode/
+.idea/
 
 backup-repo.git/

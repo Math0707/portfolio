@@ -1,33 +1,26 @@
-"use client";
-
 import { skillGroups } from "@/lib/data";
-import { useGsapReveal } from "@/lib/use-gsap-reveal";
-import { SkillBadge } from "./badge";
+import { SkillBadge } from "@/components/badge";
 
 export function Skills() {
-  const ref = useGsapReveal<HTMLDivElement>();
-
   return (
-    <div ref={ref} className="grid gap-10">
+    <div className="grid gap-6">
       {skillGroups.map((g) => (
-        <div key={g.title} className="rounded-3xl border border-white/10 bg-white/5 p-5 md:p-6 shadow-brutal">
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <h3 data-reveal className="text-lg md:text-xl font-semibold flex items-center gap-2">
-              <span className="inline-block h-2 w-2 rounded-full bg-white/70" />
+        <div key={g.title} data-reveal className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-brutal md:p-6">
+          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            <h3 className="flex items-center gap-2 text-lg font-semibold">
+              <span className="inline-block h-2 w-2 rounded-full bg-[#FF9FFC]" aria-hidden />
               {g.title}
             </h3>
-            <span data-reveal className="font-mono text-xs text-white/45">
-              {g.items.length} skills
-            </span>
+            <p className="font-mono text-xs text-white/60">{g.description}</p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <ul className="flex flex-wrap gap-2">
             {g.items.map((s) => (
-              <div data-reveal key={s.name}>
-                <SkillBadge name={s.name} icon={s.icon} className={s.accent} />
-              </div>
+              <li key={s.name}>
+                <SkillBadge name={s.name} icon={s.icon} />
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       ))}
     </div>
