@@ -1,97 +1,155 @@
-export type Skill = {
-  name: string;
-  icon: string; // public path
-  accent: string; // tailwind class
-};
+/**
+ * Projetos e habilidades.
+ *
+ * Para publicar um projeto "Em breve": troque `status` para "live" e adicione
+ * `links` (e, se quiser, `image` em /public/projects). O card se adapta sozinho.
+ */
 
-export type SkillGroup = {
-  title: string;
-  items: Skill[];
-};
-
-export const skillGroups: SkillGroup[] = [
-  {
-    title: "Back-end",
-    items: [
-      { name: "Java", icon: "/skills/java.svg", accent: "bg-amber-500/15 text-amber-200 border-amber-500/30" },
-      { name: "Spring Boot", icon: "/skills/spring.svg", accent: "bg-emerald-500/15 text-emerald-200 border-emerald-500/30" },
-      { name: "Maven", icon: "/skills/maven.svg", accent: "bg-rose-500/15 text-rose-200 border-rose-500/30" },
-      { name: "REST API", icon: "/skills/rest.svg", accent: "bg-sky-500/15 text-sky-200 border-sky-500/30" },
-    ],
-  },
-  {
-    title: "Front-end",
-    items: [
-      { name: "HTML5", icon: "/skills/html.svg", accent: "bg-orange-500/15 text-orange-200 border-orange-500/30" },
-      { name: "CSS3", icon: "/skills/css.svg", accent: "bg-blue-500/15 text-blue-200 border-blue-500/30" },
-      { name: "JavaScript", icon: "/skills/js.svg", accent: "bg-yellow-400/15 text-yellow-200 border-yellow-400/30" },
-      { name: "React", icon: "/skills/react.svg", accent: "bg-cyan-500/15 text-cyan-200 border-cyan-500/30" },
-      { name: "Next.js", icon: "/skills/next.svg", accent: "bg-neutral-200/10 text-neutral-100 border-neutral-200/20" },
-      { name: "Tailwind CSS", icon: "/skills/tailwind.svg", accent: "bg-teal-400/15 text-teal-200 border-teal-400/30" },
-    ],
-  },
-  {
-    title: "Bancos de Dados",
-    items: [
-      { name: "PostgreSQL", icon: "/skills/postgres.svg", accent: "bg-indigo-500/15 text-indigo-200 border-indigo-500/30" },
-      { name: "MongoDB", icon: "/skills/mongo.svg", accent: "bg-green-500/15 text-green-200 border-green-500/30" },
-    ],
-  },
-  {
-    title: "DevOps & Ferramentas",
-    items: [
-      { name: "Docker", icon: "/skills/docker.svg", accent: "bg-sky-500/15 text-sky-200 border-sky-500/30" },
-      { name: "Git", icon: "/skills/git.svg", accent: "bg-orange-500/15 text-orange-200 border-orange-500/30" },
-      { name: "GitHub", icon: "/skills/github.svg", accent: "bg-neutral-200/10 text-neutral-100 border-neutral-200/20" },
-      { name: "VS Code", icon: "/skills/vscode.svg", accent: "bg-blue-500/15 text-blue-200 border-blue-500/30" },
-      { name: "IntelliJ IDEA", icon: "/skills/intellij.svg", accent: "bg-fuchsia-500/15 text-fuchsia-200 border-fuchsia-500/30" },
-    ],
-  },
-];
+export type ProjectIcon = "queue" | "finance" | "link" | "resume";
 
 export type Project = {
   slug: string;
   title: string;
   subtitle: string;
   blurb: string;
-  tags: string[];
+  tags: string[]; // stack usada (ou planejada, se status = "soon")
+  status: "live" | "soon";
   year: string;
-  image: string;
+  image?: string; // só para projetos "live"
   links?: { label: string; href: string }[];
+  /** Ícone mostrado no placeholder quando não há imagem. */
+  icon?: ProjectIcon;
+  /** Funcionalidades reais, em tópicos (opcional, para projetos "live"). */
+  highlights?: string[];
+  /** Linhas exibidas no "terminal" do card quando não há imagem (opcional). */
+  preview?: string[];
 };
 
 export const projects: Project[] = [
   {
-    slug: "projeto-01",
-    title: "Projeto Full Stack Java",
-    subtitle: "API + Front-end — arquitetura limpa",
+    slug: "queue",
+    title: "Queue Manager — Fila Inteligente",
+    subtitle: "API REST de gerenciamento de filas em Java/Spring Boot",
     blurb:
-      "Um projeto exemplo para mostrar autenticação, CRUD, validações, documentação e UI responsiva.",
-    tags: ["Java", "Spring Boot", "REST", "PostgreSQL", "React"],
+      "API REST para filas com prioridade, status e agendamento, com painel web, documentação Swagger/OpenAPI, perfis H2 (dev) e PostgreSQL (prod), Docker e CI no GitHub Actions.",
+    tags: [
+      "Java 21",
+      "Spring Boot 3.5",
+      "Spring Data JPA",
+      "Bean Validation",
+      "PostgreSQL",
+      "H2",
+      "Swagger/OpenAPI",
+      "JUnit 5",
+      "Docker",
+      "GitHub Actions",
+    ],
+    status: "live",
     year: "2026",
-    image: "/projects/project-1.svg",
-    links: [{ label: "GitHub", href: "https://github.com/Math0707/project-management-system" }],
+    icon: "queue",
+    highlights: [
+      "Ordem por prioridade (HIGH > MEDIUM > LOW) com desempate por chegada (FIFO).",
+      "Agendamento: solicitações futuras só entram na fila no horário marcado.",
+      "Ciclo de vida PENDING → PROCESSING → DONE, com 409 em transições inválidas.",
+      "Testes unitários (Mockito) e de integração (MockMvc + H2) rodando no CI.",
+    ],
+    preview: [
+      "POST /tasks",
+      "GET  /queue",
+      "GET  /queue/next",
+      "POST /queue/claim",
+      "POST /tasks/{id}/complete",
+    ],
+    links: [{ label: "GitHub", href: "https://github.com/Math0707/queue" }],
   },
   {
-    slug: "projeto-02",
-    title: "Dashboard de Produtividade",
-    subtitle: "Next.js + Tailwind + animações",
+    slug: "controle-financeiro",
+    title: "Controle Financeiro",
+    subtitle: "Dashboard + CRUD de receitas e despesas",
     blurb:
-      "Interface rápida com filtros, paginação e animações suaves. Pensado para performance e UX.",
-    tags: ["Next.js", "Tailwind", "Framer Motion", "TypeScript"],
+      "App para registrar receitas e despesas, categorizar gastos e visualizar o mês em um dashboard com gráficos.",
+    tags: ["Java", "Spring Boot", "PostgreSQL", "Next.js"],
+    status: "soon",
     year: "2026",
-    image: "/projects/project-2.svg",
-    links: [{ label: "GitHub", href: "#" }],
+    icon: "finance",
   },
   {
-    slug: "projeto-03",
-    title: "Integração com APIs",
-    subtitle: "2 APIs — dados em tempo real",
+    slug: "encurtador-url",
+    title: "Encurtador de URL + Analytics",
+    subtitle: "Links curtos com métricas de acesso",
     blurb:
-      "Integração com serviços externos, cache e tratamento de erros. Foco em demonstrar maturidade de engenharia.",
-    tags: ["REST API", "MongoDB", "Docker"],
-    year: "2025",
-    image: "/projects/project-3.svg",
-    links: [{ label: "GitHub", href: "https://github.com/Math0707/Dashboard" }],
+      "Gera links curtos e registra cliques, origem e período, exibindo as métricas em um painel.",
+    tags: ["Java", "Spring Boot", "PostgreSQL", "Docker"],
+    status: "soon",
+    year: "2026",
+    icon: "link",
+  },
+  {
+    slug: "analisador-curriculo",
+    title: "Analisador de Currículo com IA",
+    subtitle: "Feedback automático sobre currículos",
+    blurb:
+      "Recebe um currículo em PDF, extrai o conteúdo e usa um modelo de IA para apontar pontos fortes, lacunas e aderência a uma vaga.",
+    tags: ["Java", "Spring Boot", "API de IA", "Next.js"],
+    status: "soon",
+    year: "2026",
+    icon: "resume",
+  },
+];
+
+export type Skill = {
+  name: string;
+  icon: string; // caminho em /public
+};
+
+export type SkillGroup = {
+  title: string;
+  description: string;
+  items: Skill[];
+};
+
+/** Mesmos grupos do currículo (seção "Competências"). */
+export const skillGroups: SkillGroup[] = [
+  {
+    title: "Front-end",
+    description: "Uso no trabalho (YASLIP).",
+    items: [
+      { name: "React", icon: "/skills/react.svg" },
+      { name: "Next.js", icon: "/skills/next.svg" },
+      { name: "TypeScript", icon: "/skills/typescript.svg" },
+      { name: "JavaScript", icon: "/skills/js.svg" },
+      { name: "HTML", icon: "/skills/html.svg" },
+      { name: "CSS", icon: "/skills/css.svg" },
+      { name: "SCSS", icon: "/skills/scss.svg" },
+      { name: "Tailwind CSS", icon: "/skills/tailwind.svg" },
+    ],
+  },
+  {
+    title: "Back-end",
+    description: "Projetos próprios.",
+    items: [
+      { name: "Java", icon: "/skills/java.svg" },
+      { name: "Spring Boot (Web, Data JPA, Validation)", icon: "/skills/spring.svg" },
+      { name: "APIs REST", icon: "/skills/rest.svg" },
+      { name: "Maven", icon: "/skills/maven.svg" },
+    ],
+  },
+  {
+    title: "Banco de dados",
+    description: "Projetos próprios.",
+    items: [
+      { name: "SQL", icon: "/skills/sql.svg" },
+      { name: "PostgreSQL", icon: "/skills/postgres.svg" },
+    ],
+  },
+  {
+    title: "Ferramentas",
+    description: "Git no fluxo do time; Docker e Linux em nível básico.",
+    items: [
+      { name: "Git", icon: "/skills/git.svg" },
+      { name: "GitHub", icon: "/skills/github.svg" },
+      { name: "Docker (básico)", icon: "/skills/docker.svg" },
+      { name: "Linux (básico)", icon: "/skills/linux.svg" },
+    ],
   },
 ];

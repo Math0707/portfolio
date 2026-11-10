@@ -2,46 +2,225 @@
 @tailwind components;
 @tailwind utilities;
 
-:root{
+:root {
   color-scheme: dark;
 }
 
-html, body{
-  height: 100%;
+html {
   scroll-behavior: smooth;
-
+  /* Compensa a navbar sticky ao navegar por âncoras (#projetos, #contato…). */
+  scroll-padding-top: 4.5rem;
 }
 
-body{
+body {
   @apply bg-black text-white antialiased;
 }
 
-::selection{
-  background: rgba(255,255,255,.18);
+::selection {
+  background: rgba(255, 255, 255, 0.18);
 }
 
-a{
+a {
   @apply underline-offset-4;
 }
 
-/* brutal-ish scrollbar */
-*{
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,.25) transparent;
+:focus-visible {
+  outline: 2px solid #ff9ffc;
+  outline-offset: 3px;
 }
-*::-webkit-scrollbar{ width: 10px; height: 10px; }
-*::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.18); border-radius: 999px; }
-*::-webkit-scrollbar-track{ background: transparent; }
 
-/* subtle grain overlay */
-.grain:before{
-  content: "";
-  position: fixed;
-  inset: -30%;
+/* Scrollbar discreta */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); border-radius: 999px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* ------------------------------------------------------------------ */
+/* Pilar de luz (substitui o WebGL/three.js).                          */
+/* Só gradientes + blur estáticos; a animação mexe apenas em           */
+/* transform/opacity, então roda no compositor sem repintar a página.  */
+/* ------------------------------------------------------------------ */
+.pillar {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-  opacity: .16;
-  transform: translateZ(0);
-  animation: grain 8s steps(10) infinite;
+  /* Some nas bordas e no topo, para não brigar com o texto. */
+  -webkit-mask-image: radial-gradient(120% 90% at 60% 60%, #000 35%, transparent 75%);
+  mask-image: radial-gradient(120% 90% at 60% 60%, #000 35%, transparent 75%);
+}
+
+.pillar__glow,
+.pillar__beam,
+.pillar__core {
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  border-radius: 9999px;
+  transform-origin: center;
+}
+
+/* Halo largo e difuso */
+.pillar__glow {
+  top: 52%;
+  height: 340px;
+  margin-top: -170px;
+  background: radial-gradient(closest-side, rgba(82, 39, 255, 0.55), rgba(255, 159, 252, 0.18) 60%, transparent);
+  filter: blur(60px);
+  opacity: 0.45;
+  transform: rotate(-9deg);
+}
+
+/* Feixe principal roxo → rosa */
+.pillar__beam {
+  top: 58%;
+  height: 150px;
+  margin-top: -75px;
+  background: linear-gradient(
+    90deg,
+    transparent 4%,
+    rgba(82, 39, 255, 0.9) 28%,
+    rgba(255, 159, 252, 0.85) 62%,
+    transparent 94%
+  );
+  filter: blur(42px);
+  opacity: 0.5;
+  transform: rotate(-9deg);
+  will-change: transform, opacity;
+  animation: pillar-drift 14s ease-in-out infinite alternate;
+}
+
+/* Linha central mais brilhante */
+.pillar__core {
+  top: 58%;
+  height: 18px;
+  margin-top: -9px;
+  background: linear-gradient(90deg, transparent 12%, rgba(167, 139, 250, 0.9) 35%, rgba(255, 214, 254, 0.95) 60%, transparent 88%);
+  filter: blur(10px);
+  opacity: 0.55;
+  transform: rotate(-9deg);
+  will-change: transform, opacity;
+  animation: pillar-pulse 7s ease-in-out infinite alternate;
+}
+
+@keyframes pillar-drift {
+  from { transform: rotate(-9deg) translate3d(-4%, 0, 0) scaleY(0.9); opacity: 0.42; }
+  to   { transform: rotate(-7deg) translate3d(4%, -12px, 0) scaleY(1.1); opacity: 0.58; }
+}
+
+@keyframes pillar-pulse {
+  from { transform: rotate(-9deg) translate3d(-2%, 0, 0) scaleX(0.96); opacity: 0.4; }
+  to   { transform: rotate(-7deg) translate3d(3%, -12px, 0) scaleX(1.04); opacity: 0.7; }
+}
+
+/* No celular o pilar fica mais sutil e com menos blur (mais barato). */
+@media (max-width: 767px) {
+  .pillar {
+    -webkit-mask-image: radial-gradient(140% 70% at 50% 85%, #000 30%, transparent 75%);
+    mask-image: radial-gradient(140% 70% at 50% 85%, #000 30%, transparent 75%);
+  }
+  .pillar__glow { display: none; }
+  .pillar__beam { top: 82%; height: 110px; margin-top: -55px; filter: blur(30px); }
+  .pillar__core { top: 82%; }
+  .pillar__beam,
+  .pillar__core { animation-duration: 18s; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Entrada do hero (substitui o fade-in do GSAP).                     */
+/* ------------------------------------------------------------------ */
+.hero-in {
+  animation: hero-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+@keyframes hero-in {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Reveal on scroll (classe adicionada por <RevealObserver />).        */
+/* Só esconde depois que o JS montou, então sem JS tudo aparece.       */
+/* ------------------------------------------------------------------ */
+.reveal-ready [data-reveal]:not(.is-visible) {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+}
+
+.reveal-ready [data-reveal] {
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ------------------------------------------------------------------ */
+/* Bolinha "Aberto a oportunidades"                                    */
+/* ------------------------------------------------------------------ */
+.status-dot {
+  position: relative;
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: #22c55e;
+}
+
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #22c55e;
+  animation: status-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes status-ping {
+  75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Placeholder dos projetos sem imagem                                 */
+/* ------------------------------------------------------------------ */
+.grid-placeholder {
+  background-color: rgba(255, 255, 255, 0.02);
+  background-image:
+    radial-gradient(60% 80% at 80% 100%, rgba(82, 39, 255, 0.22), transparent 70%),
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: auto, 24px 24px, 24px 24px;
+}
+
+.grid-placeholder--muted {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Menos movimento: desliga tudo.                                      */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .pillar__beam,
+  .pillar__core,
+  .status-dot::after { animation: none !important; }
+
+  .reveal-ready [data-reveal]:not(.is-visible) {
+    opacity: 1;
+    transform: none;
+  }
 }
